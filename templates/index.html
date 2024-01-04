@@ -1,0 +1,75 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href={% static 'css/style.css' %}>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <title>Products</title>
+</head>
+<body>
+    <h1>Products</h1>
+    <h3>Filters</h3>
+    <form id="filter-form" method="GET">
+        <div>
+            <label for="daterange">Select Date Range</label>
+            <input id="daterange" name="daterange">
+        </div>
+        <div>
+            <label for="minQ">Min Quantity</label>
+            <input id="minQ" name="minQ" type="number" min="0" step="1" oninput="validity.valid||(value='');" value="{{ minQ }}" placeholder="Press Enter to apply">
+        </div>
+        <div>
+            <label for="maxQ">Max Quantity</label>
+            <input id="maxQ" name="maxQ" type="number" min="0" step="1" oninput="validity.valid||(value='');" value="{{ maxQ }}" placeholder="Press Enter to apply">
+        </div>
+    </form>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Date Added</th>
+        </tr>
+        {% for product in products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.price|floatformat:2 }}</td>
+                <td>{{ product.date_added|date:"d.m.Y" }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+<script>
+    $(function() {
+        $('input[name="daterange"]').daterangepicker({
+            "locale": {
+                "format": "DD/MM/YYYY"
+            },
+            "startDate": {% if date1 %}"{{ date1 }}"{% else %}"{{"01/10/2023"}}"{% endif %},
+            {% if date2 %}"endDate": "{{ date2 }}", {% endif %}
+            opens: 'left'
+        });
+    });
+    
+    $(document).ready(function(){
+        $('input').on('keydown', function(event){
+            if (event.keyCode == 13){
+                event.preventDefault();
+                $('#filter-form').submit();
+            }
+        });
+        $('#daterange').on('apply.daterangepicker', function(event, picker){
+            console.log(picker.startDate.format('YYYY-MM-DD'));
+            $('#filter-form').submit();
+        });
+    });
+    
+    
+</script>
+</html>
